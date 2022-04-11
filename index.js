@@ -1,3 +1,4 @@
+const { buildResponse } = require('./utils/utils')
 const registerService = require("./service/register");
 const loginService = require("./service/login");
 const verifyService = require("/service/verify");
@@ -13,31 +14,20 @@ exports.handler = async (event) => {
   let response;
   switch (true) {
     case event.httpMethod === "GET" && event.path === healthPath:
-      response = buildResponse(200);
+      response = await healthService.health();
       break;
     case event.httpMethod === "POST" && event.path === registerPath:
       const registerBody = JSON.parse(event.body);
-      response = buildResponse(200);
+      response = await registerService.register(registerBody);
       break;
     case event.httpMethod === "POST" && event.path === loginPath:
-      const registerLogin = JSON.parse(event.body);
-      response = buildResponse(200);
+      const loginBody = JSON.parse(event.body);
+      response = await loginService.login(loginBody);
       break;
     case event.httpMethod === "POST" && event.path === verifyPath:
-      const registerVerify = JSON.parse(event.body);
-      response = buildResponse(200);
+      const verifyBody = JSON.parse(event.body);
+      response = await verifyService(verifyBody);
       break;
   }
   return response;
 };
-
-function buildResponse(statusCode, body) {
-  return {
-    statusCode: statusCode,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(body),
-  };
-}
